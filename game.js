@@ -9,15 +9,20 @@ const highScoreList = document.getElementById('high-score-list');
 // Game constants
 const TANK_SIZE = 30;
 const BULLET_SIZE = 5;
-const TANK_SPEED = 3;
+const TANK_SPEED = 2; // Slowed down speed
 const BULLET_SPEED = 6;
 const SHOT_DELAY = 5000; // 5 seconds
 const WIN_SCORE = 10;
+const OBSTACLE_SIZE = 50;
 
 // Game state
 let playerScore = 0;
 let aiScore = 0;
 let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+let obstacles = [
+    { x: 300, y: 200, width: OBSTACLE_SIZE, height: OBSTACLE_SIZE, health: 3 },
+    { x: 500, y: 400, width: OBSTACLE_SIZE, height: OBSTACLE_SIZE, health: 3 }
+];
 
 // Player tank
 let playerTank = {
@@ -106,6 +111,7 @@ function gameLoop() {
     drawTank(aiTank);
     drawBullets(playerTank.bullets);
     drawBullets(aiTank.bullets);
+    drawObstacles();
 
     // Update score display
     playerScoreDisplay.textContent = playerScore;
@@ -210,6 +216,34 @@ function checkCollisions() {
             playerTank.bullets = playerTank.bullets.filter(b => b !== bullet);
         }
     }
+
+    // Check obstacle collisions
+    checkObstacleCollisions(playerTank.bullets);
+    checkObstacleCollisions(aiTank.bullets);
+}
+
+function checkObstacleCollisions(bullets) {
+    for (let i = 0; i < bullets.length; i++) {
+        const bullet = bullets[i];
+        for (let j = 0; j < obstacles.length; j++) {
+            const obstacle = obstacles[j];
+            if (
+                bullet.x > obstacle.x &&
+                bullet.x < obstacle.x + obstacle.width &&
+                bullet.y > obstacle.y &&
+                bullet.y < obstacle.y + obstacle.height
+            ) {
+                obstacle.health--;
+                bullets.splice(i, 1);
+                i--;
+                if (obstacle.health <= 0) {
+                    obstacles.splice(j, 1);
+                    j--;
+                }
+                break;
+            }
+        }
+    }
 }
 
 // Check collision between a bullet and a tank
@@ -248,6 +282,14 @@ function drawBullets(bullets) {
         ctx.beginPath();
         ctx.arc(bullet.x, bullet.y, BULLET_SIZE, 0, 2 * Math.PI);
         ctx.fill();
+    }
+}
+
+// Draw obstacles
+function drawObstacles() {
+    ctx.fillStyle = 'brown';
+    for (const obstacle of obstacles) {
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     }
 }
 
@@ -299,6 +341,12 @@ function gameOver() {
     playerTank.y = canvas.height - TANK_SIZE;
     aiTank.x = canvas.width * 3 / 4;
     aiTank.y = TANK_SIZE;
+
+    // Reset obstacles
+    obstacles = [
+        { x: 300, y: 200, width: OBSTACLE_SIZE, height: OBSTACLE_SIZE, health: 3 },
+        { x: 500, y: 400, width: OBSTACLE_SIZE, height: OBSTACLE_SIZE, health: 3 }
+    ];
 
     // Display updated high scores
     displayHighScores();
