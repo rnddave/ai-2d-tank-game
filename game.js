@@ -217,7 +217,7 @@ function isColliding(bullet, tank) {
     const dx = bullet.x - (tank.x + TANK_SIZE / 2);
     const dy = bullet.y - (tank.y + TANK_SIZE / 2);
     const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance < TANK_SIZE / 2 + BULLET_SIZE;
+    return distance < TANK_SIZE / 2;
 }
 
 // Draw tank
@@ -250,4 +250,44 @@ function displayHighScores() {
 }
 
 // Update high scores
-function updateHighSc
+function updateHighScores(winner) {
+    const score = winner === 'player' ? playerScore : aiScore;
+    highScores.push(score);
+    highScores.sort((a, b) => b - a);
+    highScores = highScores.slice(0, 5); // Keep top 5 scores
+    localStorage.setItem('highScores', JSON.stringify(highScores));
+    displayHighScores();
+}
+
+// Game over
+function gameOver() {
+    let winner;
+    if (playerScore >= WIN_SCORE) {
+        winner = 'player';
+    } else {
+        winner = 'ai';
+    }
+
+    // Display game over message
+    alert(`Game Over! The ${winner} wins!`);
+
+    // Update high scores
+    updateHighScores(winner);
+
+    // Reset game state
+    playerScore = 0;
+    aiScore = 0;
+    playerTank.bullets = [];
+    aiTank.bullets = [];
+    playerTank.lastShot = 0;
+    aiTank.lastShot = 0;
+
+    // Reset tank positions
+    playerTank.x = canvas.width / 4;
+    playerTank.y = canvas.height - TANK_SIZE;
+    aiTank.x = canvas.width * 3 / 4;
+    aiTank.y = TANK_SIZE;
+
+    // Display updated high scores
+    displayHighScores();
+}
