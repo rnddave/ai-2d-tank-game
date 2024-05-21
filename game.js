@@ -225,7 +225,19 @@ function drawTank(tank) {
     ctx.save();
     ctx.translate(tank.x + TANK_SIZE / 2, tank.y + TANK_SIZE / 2);
     ctx.rotate(tank.angle);
-    ctx.fillRect(-TANK_SIZE / 2, -TANK_SIZE / 2, TANK_SIZE, TANK_SIZE);
+
+    // Draw tank body
+    ctx.fillStyle = 'green';
+    ctx.fillRect(-TANK_SIZE / 2, -TANK_SIZE / 4, TANK_SIZE, TANK_SIZE / 2);
+
+    // Draw tank turret
+    ctx.fillStyle = 'grey';
+    ctx.fillRect(-TANK_SIZE / 4, -TANK_SIZE / 4, TANK_SIZE / 2, TANK_SIZE / 4);
+
+    // Draw tank barrel
+    ctx.fillStyle = 'black';
+    ctx.fillRect(TANK_SIZE / 4, -TANK_SIZE / 8, TANK_SIZE / 2, TANK_SIZE / 8);
+
     ctx.restore();
 }
 
