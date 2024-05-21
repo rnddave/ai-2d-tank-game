@@ -201,18 +201,22 @@ function moveBullets(tank) {
 
 // Check collisions
 function checkCollisions() {
-    // Check player tank collisions
+    // Check player tank collisions with AI bullets
     for (const bullet of aiTank.bullets) {
         if (isColliding(bullet, playerTank)) {
-            playerScore++;
+            // AI bullet hits player tank, increment AI score
+            aiScore++;
+            // Remove the bullet from the AI tank's bullet array
             aiTank.bullets = aiTank.bullets.filter(b => b !== bullet);
         }
     }
 
-    // Check AI tank collisions
+    // Check AI tank collisions with player bullets
     for (const bullet of playerTank.bullets) {
         if (isColliding(bullet, aiTank)) {
-            aiScore++;
+            // Player bullet hits AI tank, increment player score
+            playerScore++;
+            // Remove the bullet from the player tank's bullet array
             playerTank.bullets = playerTank.bullets.filter(b => b !== bullet);
         }
     }
@@ -220,6 +224,14 @@ function checkCollisions() {
     // Check obstacle collisions
     checkObstacleCollisions(playerTank.bullets);
     checkObstacleCollisions(aiTank.bullets);
+}
+
+// Check collision between a bullet and a tank
+function isColliding(bullet, tank) {
+    const dx = bullet.x - (tank.x + TANK_SIZE / 2);
+    const dy = bullet.y - (tank.y + TANK_SIZE / 2);
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    return distance < TANK_SIZE / 2;
 }
 
 function checkObstacleCollisions(bullets) {
@@ -244,14 +256,6 @@ function checkObstacleCollisions(bullets) {
             }
         }
     }
-}
-
-// Check collision between a bullet and a tank
-function isColliding(bullet, tank) {
-    const dx = bullet.x - (tank.x + TANK_SIZE / 2);
-    const dy = bullet.y - (tank.y + TANK_SIZE / 2);
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance < TANK_SIZE / 2;
 }
 
 // Draw tank
