@@ -1,0 +1,17 @@
+#game-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#score-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#high-score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
