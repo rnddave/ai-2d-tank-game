@@ -1,4 +1,6 @@
 const canvas = document.getElementById('game-canvas');
+canvas.width = 800;
+canvas.height = 600;
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
 const livesDisplay = document.getElementById('lives');
@@ -27,8 +29,47 @@ let playerTank = {
 let enemies = [];
 
 // Input handling
+let moveLeft = false;
+let moveRight = false;
+let moveUp = false;
+let moveDown = false;
+
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
+
+function handleKeyDown(event) {
+    switch (event.keyCode) {
+        case 37: // Left arrow
+            moveLeft = true;
+            break;
+        case 39: // Right arrow
+            moveRight = true;
+            break;
+        case 38: // Up arrow
+            moveUp = true;
+            break;
+        case 40: // Down arrow
+            moveDown = true;
+            break;
+    }
+}
+
+function handleKeyUp(event) {
+    switch (event.keyCode) {
+        case 37: // Left arrow
+            moveLeft = false;
+            break;
+        case 39: // Right arrow
+            moveRight = false;
+            break;
+        case 38: // Up arrow
+            moveUp = false;
+            break;
+        case 40: // Down arrow
+            moveDown = false;
+            break;
+    }
+}
 
 // Game loop
 function gameLoop() {
@@ -63,7 +104,75 @@ function gameLoop() {
 // Start the game loop
 gameLoop();
 
-// ... (Other game logic functions)
+// Move player tank
+function movePlayerTank() {
+    if (moveLeft && playerTank.x > 0) {
+        playerTank.x -= TANK_SPEED;
+    }
+    if (moveRight && playerTank.x < canvas.width - TANK_SIZE) {
+        playerTank.x += TANK_SPEED;
+    }
+    if (moveUp && playerTank.y > 0) {
+        playerTank.y -= TANK_SPEED;
+    }
+    if (moveDown && playerTank.y < canvas.height - TANK_SIZE) {
+        playerTank.y += TANK_SPEED;
+    }
+}
+
+// Move bullets
+function moveBullets() {
+    for (let i = 0; i < playerTank.bullets.length; i++) {
+        const bullet = playerTank.bullets[i];
+        bullet.x += Math.cos(bullet.angle) * BULLET_SPEED;
+        bullet.y -= Math.sin(bullet.angle) * BULLET_SPEED;
+
+        // Remove bullets that go off-screen
+        if (
+            bullet.x < 0 ||
+            bullet.x > canvas.width ||
+            bullet.y < 0 ||
+            bullet.y > canvas.height
+        ) {
+            playerTank.bullets.splice(i, 1);
+            i--;
+        }
+    }
+}
+
+// Move enemies
+function moveEnemies() {
+    // Placeholder for enemy movement logic
+}
+
+// Check collisions
+function checkCollisions() {
+    // Placeholder for collision detection logic
+}
+
+// Draw player tank
+function drawPlayerTank() {
+    ctx.save();
+    ctx.translate(playerTank.x + TANK_SIZE / 2, playerTank.y + TANK_SIZE / 2);
+    ctx.rotate(playerTank.angle);
+    ctx.fillRect(-TANK_SIZE / 2, -TANK_SIZE / 2, TANK_SIZE, TANK_SIZE);
+    ctx.restore();
+}
+
+// Draw bullets
+function drawBullets() {
+    ctx.fillStyle = 'red';
+    for (const bullet of playerTank.bullets) {
+        ctx.beginPath();
+        ctx.arc(bullet.x, bullet.y, BULLET_SIZE, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+}
+
+// Draw enemies
+function drawEnemies() {
+    // Placeholder for drawing enemies
+}
 
 // Display high scores
 function displayHighScores() {
